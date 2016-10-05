@@ -56,10 +56,26 @@ const char* tess_eval_glsl =
 "                  (gl_TessCoord.z * gl_in[2].gl_Position);                        \n"
 "}                                                                                 \n";
 
-class Tesselation : public john::Application
+const char* geometry_glsl = 
+"#version 410 core                                                                 \n"
+"                                                                                  \n"
+"layout (triangles) in; \n"
+"layout (points, max_vertices = 3) out; \n"
+" \n"
+"void main(void) \n"
+"{ \n"
+"  int i; \n"
+"  for (i = 0; i < gl_in.length(); i++)  \n"
+"  { \n"
+"    gl_Position = gl_in[i].gl_Position; \n"
+"    EmitVertex(); \n"
+"  } \n"
+"} \n";
+
+class Geometry : public john::Application
 {
 public:
-  Tesselation();
+  Geometry();
 
   void startup();
 
@@ -78,17 +94,17 @@ private:
   GLuint program_id;
 };
 
-Tesselation::Tesselation() : 
+Geometry::Geometry() : 
   john::Application(),
   program_id(0)
 {
 }
 
-void Tesselation::startup()
+void Geometry::startup()
 {
   john::Application::startup();
 
-  program_id = compile_shaders(vertex_glsl, fragment_glsl, tess_ctrl_glsl, tess_eval_glsl);
+  program_id = compile_shaders(vertex_glsl, fragment_glsl, tess_ctrl_glsl, tess_eval_glsl, geometry_glsl);
   // draw only outlines of resulting triangles.  wireframe mode == GL_LINE
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -97,7 +113,7 @@ void Tesselation::startup()
   printf("program id: %d\n", program_id);
 }
 
-void Tesselation::render(double current_time)
+void Geometry::render(double current_time)
 {
   const GLfloat bg_color[] = { 
     0.0,
@@ -109,22 +125,23 @@ void Tesselation::render(double current_time)
   glClearBufferfv(GL_COLOR, 0, bg_color);
 
   glUseProgram(program_id);
+  glPointSize(5.0f);
   glDrawArrays(GL_PATCHES, 0, 4);
 }
 
-void Tesselation::on_key(int key, int action)
+void Geometry::on_key(int key, int action)
 {
 }
 
-void Tesselation::on_mouse(int button, int action) 
+void Geometry::on_mouse(int button, int action) 
 {
 }
 
-void Tesselation::handle_click() 
+void Geometry::handle_click() 
 {
 }
 
-void Tesselation::shutdown()
+void Geometry::shutdown()
 {
 }
 
@@ -132,7 +149,7 @@ void Tesselation::shutdown()
 
 int main(int argc, char* args[]) 
 {
-  chapter3::Tesselation* app = new chapter3::Tesselation;
+  chapter3::Geometry* app = new chapter3::Geometry;
   app->run(app);
 
   return 0;

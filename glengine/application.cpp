@@ -105,9 +105,9 @@ bool john::Application::print_screen()
   );
 }
 
-GLuint john::Application::compile_shaders(const char* vtx_shdr_src, const char* frg_shdr_src, const char* tess_ctrl_src, const char* tess_eval_src)
+GLuint john::Application::compile_shaders(const char* vtx_shdr_src, const char* frg_shdr_src, const char* tess_ctrl_src, const char* tess_eval_src, const char* geom_shdr_src)
 {
-  return john::utilities::compile_shaders(vtx_shdr_src, frg_shdr_src, tess_ctrl_src, tess_eval_src);
+  return john::utilities::compile_shaders(vtx_shdr_src, frg_shdr_src, tess_ctrl_src, tess_eval_src, geom_shdr_src);
 }
 
 
