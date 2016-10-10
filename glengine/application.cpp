@@ -17,7 +17,6 @@ john::Application::Application() :
 
 void john::Application::startup() 
 {
-  GLuint vao;
   glGenVertexArrays(1, &vao);
   glBindVertexArray(vao);
 }
@@ -103,6 +102,11 @@ bool john::Application::print_screen()
     GL_FLOAT, 
     pixels
   );
+}
+
+GLuint john::Application::compile_shaders(const char* vtx_shdr_src, const char* frg_shdr_src)
+{
+  return john::utilities::compile_shaders(vtx_shdr_src, frg_shdr_src);
 }
 
 GLuint john::Application::compile_shaders(const char* vtx_shdr_src, const char* frg_shdr_src, const char* tess_ctrl_src, const char* tess_eval_src, const char* geom_shdr_src)

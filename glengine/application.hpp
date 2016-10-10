@@ -50,6 +50,8 @@ protected:
 
   virtual void on_key(int key, int action) = 0;
 
+  GLuint compile_shaders(const char* vtx_shdr_src, const char* frg_shdr_src);
+
   GLuint compile_shaders(const char* vtx_shdr_src, const char* frg_shdr_src, const char* tess_ctrl_src, const char* tess_eval_src, const char* geom_shdr_src);
 
 public:

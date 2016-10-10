@@ -44,7 +44,9 @@ protected:
   void on_key(int key, int action);
 
 private:
+  GLuint vao;
   GLuint program_id;
+  sb7::object obj;
 };
 
 struct Vertex {
@@ -72,13 +74,13 @@ struct Vertex {
 
 LoadObjFromFiles::LoadObjFromFiles() : 
   john::Application(),
-  program_id(0)
+  program_id(0),
+  vao(0)
 {
 }
 
 void LoadObjFromFiles::startup()
 {
-  GLuint buffer;
   /*
 "    vec4(0.25, -0.25, 0.5, 1.0), \n"
 "    vec4(-0.25, -0.25, 0.5, 1.0), \n"
@@ -92,8 +94,10 @@ void LoadObjFromFiles::startup()
     v1, v2, v3
   };
 
-  sb7::object obj;
   obj.load("media/cube.sbm");
+
+  glGenBuffers(1, &vao);
+
 
   /*
   // create vertex array object
@@ -135,7 +139,7 @@ void LoadObjFromFiles::render(double current_time)
   glClearBufferfv(GL_COLOR, 0, color);
 
   glUseProgram(program_id);
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  //glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 void LoadObjFromFiles::on_key(int key, int action)
