@@ -84,6 +84,12 @@ void Buffers::startup()
     1.0f, 1.0f, 1.0f,
     0.0f, 1.0f, 1.0f
   };
+
+  static const Vertex vertices[] = {
+    { 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f },
+    { 1.0f, -1.0f, 0.0f, 1.0f, 1.0f, 1.0f },
+    { -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f }
+  };
   /*
   glGenBuffers(1, &buffer);
 
@@ -91,6 +97,7 @@ void Buffers::startup()
   glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
   */
 
+  /*
   glGenBuffers(1, &buffer);
 
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -104,8 +111,18 @@ void Buffers::startup()
   glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
   glEnableVertexAttribArray(1);
-
+  */
   program_id = compile_shaders(vertex_glsl, fragment_glsl);
+  glGenBuffers(1, &buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, x));
+  glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, r));
+  glEnableVertexAttribArray(1);
+
 }
 
 void Buffers::render(double current_time)
@@ -128,6 +145,7 @@ void Buffers::render(double current_time)
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
   */
 
+  /*
   glEnableVertexAttribArray(0);
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -136,10 +154,13 @@ void Buffers::render(double current_time)
   glBindBuffer(GL_ARRAY_BUFFER, buffer_2);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
+  glEnableVertexAttribArray(0);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, x));
+  */
+
   glDrawArrays(GL_TRIANGLES, 0, 3);
 
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
 }
 
 void Buffers::on_key(int key, int action)
@@ -156,6 +177,8 @@ void Buffers::handle_click()
 
 void Buffers::shutdown()
 {
+  glDisableVertexAttribArray(0);
+  glDisableVertexAttribArray(1);
 }
 
 }
