@@ -17,7 +17,14 @@ const char* vertex_glsl =
 "  layout (offset = 8) vec2 bar; // 8 % 8 == 0 \n"
 "  layout (offset = 48) vec3 baz; // 48 % 16 == 0 \n"
 "} manually_laid_out;*/ \n"
-"layout(std140) uniform TransformBlock \n"
+/*"layout(std140) uniform TransformBlock \n"
+"{ \n"
+"  float scale; \n"
+"  vec3 translation; \n"
+"  float rotation[3]; \n"
+"  mat4 projection_matrix; \n"
+"} transform; \n"*/
+"layout(std140, binding = 2) uniform TransformBlock \n"
 "{ \n"
 "  float scale; \n"
 "  vec3 translation; \n"
@@ -107,18 +114,6 @@ void Uniforms::startup()
 
   // @wip
 }
-
-void Uniforms::render(double current_time)
-{
-  glBindVertexArray(vao);
-  const GLfloat color[] = { 
-//    (float)sin(current_time) * 0.5f + 0.5f,
-//    (float)cos(current_time) * 0.5f + 0.5f,
-    0.0,
-    0.0,
-    1.0,
-    0.0 
-  };
 
   glClearBufferfv(GL_COLOR, 0, color);
   glUseProgram(program_id);
