@@ -1,6 +1,10 @@
 #include <math.h>
+#include <iostream>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/ext.hpp>
 
 #include "glengine/application.hpp"
 #include "common/object.h"
@@ -19,13 +23,12 @@ const char* vertex_glsl =
 "} vs_out; \n"
 " \n"
 "uniform mat4 mv_matrix; \n"
-" \n"
 "uniform mat4 proj_matrix; \n"
 " \n"
 "void main(void) { \n"
 "  gl_Position = proj_matrix * mv_matrix * position; \n"
-"  vs_out.color = position * 2.0 + vec4(0.5, 0.5, 0.5, 0.0); \n"
-"} \n" 
+"  vs_out.color = position * 2.0 + vec4(0.5, 0.5, 0.5, 0.0);      \n"
+"} \n" ;
 
 const char* fragment_glsl = 
 "#version 410 core \n"
@@ -76,11 +79,13 @@ private:
 
 SpinningCube::SpinningCube() : 
   john::Application(),
-  program_id(1),
-  vao(1),
-  buffer(1),
+  program_id(0),
+  vao(0),
+  buffer(0),
   mv_location(0),
-  proj_location(0)
+  proj_location(0),
+  aspect(4.0f / 3.0f),
+  proj_matrix(glm::perspective(50.0f, aspect, 0.1f, 1000.0f))
 {
 }
 
@@ -90,6 +95,8 @@ void SpinningCube::startup()
 
   mv_location = glGetUniformLocation(program_id, "mv_matrix");
   proj_location = glGetUniformLocation(program_id, "proj_matrix");
+
+  printf("mv_location: %d proj_location %d\n", mv_location, proj_location);
 
   john::Application::startup();
 
@@ -164,41 +171,101 @@ void SpinningCube::startup()
 }
 
 void SpinningCube::render(double current_time) {
-  const GLfloat color[] = { 0.0f, 0.0f, 0.5f, 0.0f };
+  const GLfloat color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
   const GLfloat one = 1.0f;
 
-  glClearBufferfv(GL_COLOR, 0, color);
-  glClearBufferfv(GL_DEPTH, 0, one);
   glViewport(0, 0, width, height);
+  glClearBufferfv(GL_DEPTH, 0, &one);
+  glClearBufferfv(GL_COLOR, 0, color);
+
   glUseProgram(program_id);
-
-  float f = (float) current_time * (float) M_PI * 0.1f;
-
   glm::mat4 identity_matrix = glm::mat4(1.0f);
+  glm::mat4 view_matrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -6.0f));
+  glUniformMatrix4fv(proj_location, 1, GL_FALSE, glm::value_ptr(proj_matrix));
+#define LOTS_O_CUBES
+
+#ifdef LOTS_O_CUBES
+  int i;
+  for (i = 0; i < 24; ++i) {
+    float f = (float)i + (float)current_time * 0.3f;
+
+    glm::mat4 view_translation_matrix = glm::translate(
+      view_matrix,
+      glm::vec3(
+        sinf(2.1f * f) * 2.0f,
+        cosf(1.7f * f) * 2.0f,                        
+        sinf(1.3f * f) * cosf(1.5f * f) * 2.0f    
+      )
+    );
+
+    glm::mat4 rotated_vt_matrix = glm::rotate(
+      view_translation_matrix,
+      (float) current_time * 45.0f,
+      glm::vec3(0.0f, 1.0f, 0.0f)
+    );
+
+    glm::mat4 mv_matrix = glm::rotate(
+      rotated_vt_matrix,
+      (float) current_time * 21.0f, 
+      glm::vec3(1.0f, 0.0f, 0.0f)
+    );
+
+    glUniformMatrix4fv(mv_location, 1, GL_FALSE, glm::value_ptr(mv_matrix));
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+  }
+#else
+  float f = (float)current_time * 0.3f;
 
   glm::mat4 translation_matrix = 
     glm::translate(
-      sinf(2.1f * f) * 0.5f,
-      cosf(1.7f * f) * 0.5f,
-      sinf(1.3f * f) * cosf(1.5f * f) * 2.0f
+      glm::mat4(),
+      glm::vec3(
+        sinf(2.1f * f) * 0.5f,
+        cosf(1.7f * f) * 0.5f,
+        sinf(1.3f * f) * cosf(1.5f * f) * 2.0f
+      )
     );
   
   glm::mat4 rotation_matrix = 
-    glm::rotate((float)currentTime * 45.0f, 0.0f, 1.0f, 0.0f) *
-    glm::rotate((float)currentTime * 81.0f, 1.0f, 0.0f, 0.0f);
+    glm::rotate(glm::mat4(), (float)current_time * 45.0f, glm::vec3(0.0f, 1.0f, 0.0f)) *
+    glm::rotate(glm::mat4(), (float)current_time * 81.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 
-  glm::mat4 scale_matrix = glm::scale(1.0f, 1.0f, 1.0f);
+  glm::mat4 scale_matrix = glm::scale(glm::mat4(), glm::vec3(1.0f, 1.0f, 1.0f));
 
   glm::mat4 model_matrix = translation_matrix * rotation_matrix * scale_matrix * identity_matrix;
 
-  glm::mat4 view_matrix = glm::translate(0.0f, 0.0f, -4.0f);
+
+  // NOTE
+  // glm supports chaining matrices for exactly this kind of situation
+  // and it is optimized to do so
+  // using glm::transform(glm::mat4()...) is just for explicit purposes :)
+  /*glm::mat4 view_translation_matrix = glm::translate(
+    view_matrix, 
+    glm::vec3(
+      sinf(2.1f * f) * 0.5f,
+      cosf(1.7f * f) * 0.5f,
+      sinf(1.3f * f) * cosf(1.5f * f) * 2.0f
+    )
+  );
+
+  glm::mat4 rotated_vt_matrix = glm::rotate(
+    view_translation_matrix, 
+    (float) current_time * 45.0f,
+    glm::vec3(0.0f, 1.0f, 0.0f)
+  );
+
+  glm::mat4 mv_matrix = glm::rotate(
+    rotated_vt_matrix,
+    (float) current_time * 81.0f,
+    glm::vec3(1.0f, 0.0f, 0.0f)
+  );*/
+
 
   glm::mat4 mv_matrix = view_matrix * model_matrix;  
+  glUniformMatrix4fv(mv_location, 1, GL_FALSE, glm::value_ptr(mv_matrix));
 
-  glUniformMatrix4fv
-
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+#endif
 }
 
 void SpinningCube::on_key(int key, int action)
