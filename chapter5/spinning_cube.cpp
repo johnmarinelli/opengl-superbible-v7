@@ -84,7 +84,7 @@ SpinningCube::SpinningCube() :
   buffer(0),
   mv_location(0),
   proj_location(0),
-  aspect(4.0f / 3.0f),
+  aspect(1268.0f / 768.0f),
   proj_matrix(glm::perspective(50.0f, aspect, 0.1f, 1000.0f))
 {
 }
@@ -180,7 +180,7 @@ void SpinningCube::render(double current_time) {
 
   glUseProgram(program_id);
   glm::mat4 identity_matrix = glm::mat4(1.0f);
-  glm::mat4 view_matrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -6.0f));
+  glm::mat4 view_matrix = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -100.0f));
   glUniformMatrix4fv(proj_location, 1, GL_FALSE, glm::value_ptr(proj_matrix));
 #define LOTS_O_CUBES
 
