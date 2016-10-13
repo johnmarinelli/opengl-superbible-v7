@@ -11,7 +11,9 @@ namespace john
 
 
 john::Application::Application() :
-    vao(0)
+    vao(0),
+    width(1024),
+    height(768)
 {
 }
 

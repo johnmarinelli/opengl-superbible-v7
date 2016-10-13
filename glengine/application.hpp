@@ -39,6 +39,11 @@ protected:
     app->on_key(key, action);
   }
 
+  static void glfw_onResize(GLFWwindow* window, int width, int height)
+  {
+    app->on_resize(width, height);
+  }
+
   void get_mouse_position(int& x, int& y)
   {
       double dx, dy;
@@ -49,18 +54,18 @@ protected:
   }
 
   virtual void on_key(int key, int action) = 0;
+  virtual void on_resize(int width, int height) = 0;
 
   GLuint compile_shaders(const char* vtx_shdr_src, const char* frg_shdr_src);
 
   GLuint compile_shaders(const char* vtx_shdr_src, const char* frg_shdr_src, const char* tess_ctrl_src, const char* tess_eval_src, const char* geom_shdr_src);
 
 public:
-  const uint32_t width = 1024;
-  const uint32_t height = 768;
-
   GLuint program_id;
   GLuint vao;
   GLuint palette_texture;
+
+  int width, height;
 
   GLFWwindow* window;
 };

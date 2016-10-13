@@ -115,6 +115,7 @@ void Uniforms::startup()
   // @wip
 }
 
+void Uniforms::render(double current_time) {
   glClearBufferfv(GL_COLOR, 0, color);
   glUseProgram(program_id);
 
