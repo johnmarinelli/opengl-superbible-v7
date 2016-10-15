@@ -120,7 +120,7 @@ void Textures::render(double current_time) {
 
   glUseProgram(program_id);
 
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  glDrawArrays(GL_TRIANGLES, 0, 4);
 }
 
 void Textures::on_key(int key, int action)
