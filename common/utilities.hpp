@@ -7,14 +7,23 @@ namespace john
 namespace utilities
 {
   int compile_shaders(const char* vtx_shdr_txt, const char* frg_shdr_txt) {
+    char buffer[1024];
+
     GLuint vtx_shader, frg_shader, programID;
     vtx_shader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vtx_shader, 1,&vtx_shdr_txt, NULL);
     glCompileShader(vtx_shader);
 
+    glGetShaderInfoLog(vtx_shader, 1024, NULL, buffer);
+    printf("%s", buffer);
+
     frg_shader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(frg_shader, 1, &frg_shdr_txt, NULL);
     glCompileShader(frg_shader);
+
+    glGetShaderInfoLog(frg_shader, 1024, NULL, buffer);
+    printf("%s", buffer);
+
     programID = glCreateProgram();
     glAttachShader(programID, vtx_shader);
     glAttachShader(programID, frg_shader);
@@ -25,6 +34,9 @@ namespace utilities
 
     glDeleteShader(vtx_shader);
     glDeleteShader(frg_shader);
+
+    glGetProgramInfoLog(programID, 1024, NULL, buffer);
+    printf("%s", buffer);
 
     if (0 == programID) { 
       printf("Error compiling shaders: %d\n", programID);
