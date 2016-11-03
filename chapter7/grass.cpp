@@ -199,17 +199,38 @@ void Grass::startup()
 
   uniforms.mvpMatrix = glGetUniformLocation(program_id, "mvpMatrix");
 
-  glActiveTexture(GL_TEXTURE1);
+  GLint location1 = glGetUniformLocation(program_id, "grasspalette_texture");
+  GLint location2 = glGetUniformLocation(program_id, "length_texture");
+  GLint location3 = glGetUniformLocation(program_id, "orientation_texture");
+  GLint location4 = glGetUniformLocation(program_id, "grasscolor_texture");
+  GLint location5 = glGetUniformLocation(program_id, "bend_texture");
+  printf("%d %d %d %d %d \n", location1, location2, location3, location4, location5);
+
+  glUniform1i(location1, 0);
+  glUniform1i(location2, 1);
+  glUniform1i(location3, 2);
+  glUniform1i(location4, 3);
+  glUniform1i(location5, 4);
+
+  glActiveTexture(GL_TEXTURE0 + 1);
   tex_grass_length = sb6::ktx::file::load("/Local/Users/john/Documents/cpp/superbible/media/textures/grass_length.ktx");
+  glBindTexture(GL_TEXTURE_1D, tex_grass_length);
 
-  glActiveTexture(GL_TEXTURE2);
+  glActiveTexture(GL_TEXTURE0 + 2);
   tex_grass_orientation = sb6::ktx::file::load("/Local/Users/john/Documents/cpp/superbible/media/textures/grass_orientation.ktx");
+  glBindTexture(GL_TEXTURE_2D, tex_grass_orientation);
 
-  glActiveTexture(GL_TEXTURE3);
+  glActiveTexture(GL_TEXTURE0 + 3);
   tex_grass_color = sb6::ktx::file::load("/Local/Users/john/Documents/cpp/superbible/media/textures/grass_color.ktx");
+  glBindTexture(GL_TEXTURE_2D, tex_grass_color);
 
-  glActiveTexture(GL_TEXTURE4);
+  glActiveTexture(GL_TEXTURE0 + 4);
   tex_grass_bend = sb6::ktx::file::load("/Local/Users/john/Documents/cpp/superbible/media/textures/grass_bend.ktx");
+  glBindTexture(GL_TEXTURE_2D, tex_grass_bend);
+
+
+  printf("%d %d %d \n", tex_grass_orientation, tex_grass_color, tex_grass_bend);
+
 
   glEnable(GL_CULL_FACE);
   //glFrontFace(GL_CW);
